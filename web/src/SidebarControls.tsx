@@ -221,6 +221,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     {isConfigOpen && (
       <div className="modal-overlay" onClick={() => setIsConfigOpen(false)}>
         <div className="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title" onClick={e => e.stopPropagation()}>
+          <div className="modal-scroll-inner">
            <button className="modal-close" aria-label="Close modal" onClick={() => setIsConfigOpen(false)}>
              <X size={24} />
            </button>
@@ -231,6 +232,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               pickingMode={pickingMode}
               setPickingMode={setPickingMode}
            />
+          </div>
         </div>
       </div>
     )}
