@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { ConfigUI } from './ConfigUI';
-import { Settings, Save, X, Upload, Loader2 } from 'lucide-react';
+import { Settings, Save, X, Upload, Loader2, ImagePlus } from 'lucide-react';
 import JSZip from 'jszip';
 import { drawInteractionDiagram } from './lib/renderDiagram';
 
@@ -25,6 +25,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({ kn, rn, setKn,
     link.download = `Rn-${rn.toFixed(3)}_Kn-${kn.toFixed(3)}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
+  };
+
+  const handleBaseImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setConfig({ ...config, image_path: url });
+    e.target.value = '';
   };
 
   const handleBatchCSV = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -139,9 +147,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({ kn, rn, setKn,
           aria-hidden="true"
         />
       </section>
-      
+
+      <hr style={{ borderTop: "1px solid var(--ce-border)", borderBottom: "none", margin: 0 }} />
+
+      {/* EXPORT / ACTIONS */}
       <button className="primary-button flex-button" onClick={handleSaveImage}>
-        <Save size={18} /> Save Image
+        <Save size={18} /> Save Current Image
       </button>
 
       <section className="control-group upload-section">
@@ -177,9 +188,29 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({ kn, rn, setKn,
         </div>
       </section>
 
-      <button className="secondary-button flex-button" onClick={() => setIsConfigOpen(true)}>
-        <Settings size={18} /> Settings Configuration
-      </button>
+      <hr style={{ borderTop: "1px solid var(--ce-border)", borderBottom: "none", margin: 0 }} />
+
+      {/* CONFIGURATION EXPERIENCES */}
+      <section className="control-group upload-section" style={{ gap: "0.5rem" }}>
+        <input 
+          type="file" 
+          id="base-image-upload"
+          accept="image/*"
+          onChange={handleBaseImageUpload}
+          style={{ display: 'none' }}
+        />
+        <label 
+          htmlFor="base-image-upload" 
+          className="secondary-button flex-button" 
+          style={{ cursor: 'pointer' }}
+        >
+          <ImagePlus size={18} /> Upload Base Chart
+        </label>
+
+        <button className="secondary-button flex-button" onClick={() => setIsConfigOpen(true)}>
+          <Settings size={18} /> Settings Configuration
+        </button>
+      </section>
 
       <div className="info-card">
         <p>Modify settings like limits, origins, and styling via the configuration modal to instantly update the interaction diagram.</p>

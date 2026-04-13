@@ -49,10 +49,9 @@ export const ConfigUI: React.FC<ConfigUIProps> = ({ config, setConfig }) => {
   return (
     <div className="config-ui">
       
-      <section className="config-section" aria-labelledby="calib-title">
-        <header>
-          <h3 id="calib-title" className="section-title">Calibration Points</h3>
-        </header>
+      <details className="config-section" open>
+        <summary id="calib-title" className="section-title">Calibration Points</summary>
+        <p className="help-text">Map strict vector limits (Val Rn / Val Kn) to their corresponding exact pixel coordinates on the base image.</p>
         <div className="coord-group">
           <strong>P1 (Origin)</strong>
           <div className="config-row">
@@ -76,12 +75,11 @@ export const ConfigUI: React.FC<ConfigUIProps> = ({ config, setConfig }) => {
             <label>Val Kn:<input type="number" className="number-input-small" value={config.calibration?.point2?.value?.[1] ?? 0} onChange={e => updateNested(['calibration', 'point2', 'value', '1'], parseFloat(e.target.value))} /></label>
           </div>
         </div>
-      </section>
+      </details>
 
-      <section className="config-section" aria-labelledby="h-title">
-        <header>
-          <h3 id="h-title" className="section-title">Horizontal Line Setting</h3>
-        </header>
+      <details className="config-section">
+        <summary id="h-title" className="section-title">Horizontal Line Setting</summary>
+        <p className="help-text">Controls the rendering of the capacity limit mapping horizontally across the Rn axis based on vertical Kn depth.</p>
         <div className="config-row">
            <label>Color: <input type="color" value={config.style?.horizontal_line?.color || '#000000'} onChange={e => updateNested(['style', 'horizontal_line', 'color'], e.target.value)}/></label>
            <label>Width: <input type="number" step="0.1" className="number-input-small" value={config.style?.horizontal_line?.linewidth ?? 1} onChange={e => updateNested(['style', 'horizontal_line', 'linewidth'], parseFloat(e.target.value))}/></label>
@@ -97,12 +95,11 @@ export const ConfigUI: React.FC<ConfigUIProps> = ({ config, setConfig }) => {
            ))}
            <button className="secondary-button flex-button" onClick={() => addConditionalLimit('horizontal_line')}><Plus size={16} /> Add Rule</button>
         </div>
-      </section>
+      </details>
 
-      <section className="config-section" aria-labelledby="v-title">
-        <header>
-          <h3 id="v-title" className="section-title">Vertical Line Setting</h3>
-        </header>
+      <details className="config-section">
+        <summary id="v-title" className="section-title">Vertical Line Setting</summary>
+        <p className="help-text">Controls the limit mapping spanning vertically along the Kn axis driven by lateral Rn capacity thresholds.</p>
         <div className="config-row">
            <label>Color: <input type="color" value={config.style?.vertical_line?.color || '#000000'} onChange={e => updateNested(['style', 'vertical_line', 'color'], e.target.value)}/></label>
            <label>Width: <input type="number" step="0.1" className="number-input-small" value={config.style?.vertical_line?.linewidth ?? 1} onChange={e => updateNested(['style', 'vertical_line', 'linewidth'], parseFloat(e.target.value))}/></label>
@@ -118,16 +115,15 @@ export const ConfigUI: React.FC<ConfigUIProps> = ({ config, setConfig }) => {
            ))}
            <button className="secondary-button flex-button" onClick={() => addConditionalLimit('vertical_line')}><Plus size={16} /> Add Rule</button>
         </div>
-      </section>
+      </details>
 
-      <section className="config-section" aria-labelledby="r-title">
-        <header>
-          <h3 id="r-title" className="section-title">Radial Line & Target</h3>
-        </header>
+      <details className="config-section">
+        <summary id="r-title" className="section-title">Radial Line & Target</summary>
+        <p className="help-text">Configures the extension projection vector spanning directly from the origin through the evaluated target load.</p>
         <div className="config-row">
            <label>Extension Px: <input type="number" className="number-input-small" value={config.style?.radial_line?.extension ?? 0} onChange={e => updateNested(['style', 'radial_line', 'extension'], parseFloat(e.target.value))}/></label>
         </div>
-      </section>
+      </details>
 
     </div>
   );
