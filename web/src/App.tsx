@@ -20,7 +20,7 @@ function App() {
 
   return (
     <div className="app-container">
-      <SidebarControls kn={kn} rn={rn} setKn={setKn} setRn={setRn} />
+      <SidebarControls kn={kn} rn={rn} setKn={setKn} setRn={setRn} config={config} setConfig={setConfig} />
       <main className="main-content">
         {config ? (
           <DiagramCanvas kn={kn} rn={rn} config={config} />

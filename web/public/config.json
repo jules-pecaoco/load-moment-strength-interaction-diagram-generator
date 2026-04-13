@@ -20,7 +20,7 @@
       ],
       "color": "blue",
       "linestyle": "-",
-      "linewidth": 0.7,
+      "linewidth": 0.8,
       "alpha": 1
     },
     "vertical_line": {
@@ -32,14 +32,14 @@
       ],
       "color": "red",
       "linestyle": "-",
-      "linewidth": 0.7,
+      "linewidth": 0.8,
       "alpha": 1
     },
     "radial_line": {
       "extension": 50,
       "color": "yellow",
       "linestyle": "-",
-      "linewidth": 0.7,
+      "linewidth": 0.8,
       "alpha": 1
     },
     "dot": {
