@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { ConfigUI } from './ConfigUI';
-import { Settings, Save, X, Upload, Loader2, ImagePlus } from 'lucide-react';
+import { Settings, Save, X, Upload, Loader2, ImagePlus, Database } from 'lucide-react';
 import JSZip from 'jszip';
 import { drawInteractionDiagram } from './lib/renderDiagram';
 
@@ -11,9 +11,13 @@ interface SidebarControlsProps {
   setRn: (val: number) => void;
   config: any;
   setConfig: (val: any) => void;
+  pickingMode: 'p1' | 'p2' | null;
+  setPickingMode: (mode: 'p1' | 'p2' | null) => void;
 }
 
-export const SidebarControls: React.FC<SidebarControlsProps> = ({ kn, rn, setKn, setRn, config, setConfig }) => {
+export const SidebarControls: React.FC<SidebarControlsProps> = ({ 
+  kn, rn, setKn, setRn, config, setConfig, pickingMode, setPickingMode 
+}) => {
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -150,38 +154,46 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({ kn, rn, setKn,
 
       <hr style={{ borderTop: "1px solid var(--ce-border)", borderBottom: "none", margin: 0 }} />
 
-      {/* EXPORT / ACTIONS */}
-      <button className="primary-button flex-button" onClick={handleSaveImage}>
-        <Save size={18} /> Save Current Image
-      </button>
+      {/* ASSETS & UPLOADS */}
+      <section className="control-group">
+        <h3 className="section-subtitle"><Database size={16} /> Data & Assets</h3>
+        
+        <div className="upload-box">
+          <input 
+            type="file" 
+            id="base-image-upload"
+            accept="image/*"
+            onChange={handleBaseImageUpload}
+            style={{ display: 'none' }}
+          />
+          <label htmlFor="base-image-upload" className="secondary-button flex-button" style={{ cursor: 'pointer' }}>
+            <ImagePlus size={18} /> Upload Base Chart
+          </label>
+          <p className="help-text-sidebar">Use your own interaction diagram image as background.</p>
+        </div>
 
-      <section className="control-group upload-section">
-        <input 
-          type="file" 
-          id="csv-upload"
-          accept=".csv"
-          onChange={handleBatchCSV}
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-          disabled={isProcessing}
-        />
-        <label 
-          htmlFor="csv-upload" 
-          className="secondary-button flex-button" 
-          style={{ cursor: isProcessing ? 'not-allowed' : 'pointer', opacity: isProcessing ? 0.7 : 1 }}
-        >
-          {isProcessing ? (
-            <><Loader2 size={18} className="animate-spin" /> Processing Batch...</>
-          ) : (
-            <><Upload size={18} /> Upload CSV & Export</>
-          )}
-        </label>
-        <div style={{ fontSize: "11px", color: "var(--ce-text-secondary)", textAlign: "center", marginTop: "0.5rem" }}>
-          Format: Rn, Kn (e.g. 0.12, 1.45) -&gt; Yields .ZIP<br />
+        <div className="upload-box" style={{ marginTop: '0.25rem' }}>
+          <input 
+            type="file" 
+            id="csv-upload"
+            accept=".csv"
+            onChange={handleBatchCSV}
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            disabled={isProcessing}
+          />
+          <label htmlFor="csv-upload" className="secondary-button flex-button" style={{ cursor: isProcessing ? 'not-allowed' : 'pointer', opacity: isProcessing ? 0.7 : 1 }}>
+            {isProcessing ? (
+              <><Loader2 size={18} className="animate-spin" /> Processing...</>
+            ) : (
+              <><Upload size={18} /> Batch CSV Export</>
+            )}
+          </label>
+          <p className="help-text-sidebar">Plot multiple Rn, Kn points from a file.</p>
           <a 
             href="data:text/csv;charset=utf-8,rn%2Ckn%0A0.12%2C1.45%0A0.25%2C2.10%0A0.30%2C0.80" 
             download="sample_format.csv" 
-            style={{ color: "var(--ce-blue-mid)", textDecoration: "underline", fontWeight: 600, display: "inline-block", marginTop: "0.25rem" }}
+            className="sample-link"
           >
             Download Sample CSV
           </a>
@@ -190,22 +202,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({ kn, rn, setKn,
 
       <hr style={{ borderTop: "1px solid var(--ce-border)", borderBottom: "none", margin: 0 }} />
 
-      {/* CONFIGURATION EXPERIENCES */}
-      <section className="control-group upload-section" style={{ gap: "0.5rem" }}>
-        <input 
-          type="file" 
-          id="base-image-upload"
-          accept="image/*"
-          onChange={handleBaseImageUpload}
-          style={{ display: 'none' }}
-        />
-        <label 
-          htmlFor="base-image-upload" 
-          className="secondary-button flex-button" 
-          style={{ cursor: 'pointer' }}
-        >
-          <ImagePlus size={18} /> Upload Base Chart
-        </label>
+      {/* EXPORT / ACTIONS */}
+      <section className="control-group">
+        <button className="primary-button flex-button" onClick={handleSaveImage}>
+          <Save size={18} /> Save Current Image
+        </button>
 
         <button className="secondary-button flex-button" onClick={() => setIsConfigOpen(true)}>
           <Settings size={18} /> Settings Configuration
@@ -213,7 +214,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({ kn, rn, setKn,
       </section>
 
       <div className="info-card">
-        <p>Modify settings like limits, origins, and styling via the configuration modal to instantly update the interaction diagram.</p>
+        <p>Fine-tune calibration points and visual styles in settings to match your specific chart scale.</p>
       </div>
     </aside>
 
@@ -224,7 +225,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({ kn, rn, setKn,
              <X size={24} />
            </button>
            <h2 id="modal-title" style={{ marginBottom: "1.5rem", color: "var(--ce-blue-dark)" }}>Settings Configuration</h2>
-           <ConfigUI config={config} setConfig={setConfig} />
+           <ConfigUI 
+              config={config} 
+              setConfig={setConfig} 
+              pickingMode={pickingMode}
+              setPickingMode={setPickingMode}
+           />
         </div>
       </div>
     )}

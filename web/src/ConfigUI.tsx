@@ -1,12 +1,14 @@
 import React from 'react';
-import { Trash2, Plus, ChevronDown } from 'lucide-react';
+import { Trash2, Plus, ChevronDown, MousePointer2, Info } from 'lucide-react';
 
 interface ConfigUIProps {
   config: any;
   setConfig: (val: any) => void;
+  pickingMode: 'p1' | 'p2' | null;
+  setPickingMode: (mode: 'p1' | 'p2' | null) => void;
 }
 
-export const ConfigUI: React.FC<ConfigUIProps> = ({ config, setConfig }) => {
+export const ConfigUI: React.FC<ConfigUIProps> = ({ config, setConfig, pickingMode, setPickingMode }) => {
   if (!config) return null;
 
   const updateNested = (path: string[], value: any) => {
@@ -54,165 +56,138 @@ export const ConfigUI: React.FC<ConfigUIProps> = ({ config, setConfig }) => {
           <div className="summary-content">Calibration Points</div>
           <ChevronDown size={18} className="dropdown-icon" />
         </summary>
-        <p className="help-text">Map strict vector limits (Val Rn / Val Kn) to their corresponding exact pixel coordinates on the base image.</p>
-        <div className="coord-group">
-          <strong>P1 (Origin)</strong>
+        <div className="help-box-main">
+          <Info size={14} />
+          <p>Calibration tells the tool how to map chart pixels to real numeric values (Rn, Kn).</p>
+        </div>
+
+        <div className={`coord-group ${pickingMode === 'p1' ? 'picking-highlight' : ''}`}>
+          <div className="coord-group-header">
+            <strong>P1 (Axis Origin)</strong>
+            <button 
+              className={`pick-btn ${pickingMode === 'p1' ? 'active' : ''}`}
+              onClick={() => setPickingMode(pickingMode === 'p1' ? null : 'p1')}
+              title="Click on the diagram to set this point"
+            >
+              <MousePointer2 size={14} /> {pickingMode === 'p1' ? 'Picking...' : 'Pick from diagram'}
+            </button>
+          </div>
+          <p className="field-help">Usually the (0,0) point where the X (Rn) and Y (Kn) axes meet.</p>
           <div className="config-row">
-            <label>Pixel X:<input type="number" className="number-input-small" value={config.calibration?.point1?.pixel?.[0] ?? 0} onChange={e => updateNested(['calibration', 'point1', 'pixel', '0'], parseFloat(e.target.value))} /></label>
-            <label>Pixel Y:<input type="number" className="number-input-small" value={config.calibration?.point1?.pixel?.[1] ?? 0} onChange={e => updateNested(['calibration', 'point1', 'pixel', '1'], parseFloat(e.target.value))} /></label>
+            <label>Pixel position X:<input type="number" className="number-input-small" value={config.calibration?.point1?.pixel?.[0] ?? 0} onChange={e => updateNested(['calibration', 'point1', 'pixel', '0'], parseFloat(e.target.value))} /></label>
+            <label>Pixel position Y:<input type="number" className="number-input-small" value={config.calibration?.point1?.pixel?.[1] ?? 0} onChange={e => updateNested(['calibration', 'point1', 'pixel', '1'], parseFloat(e.target.value))} /></label>
           </div>
           <div className="config-row">
-            <label>Val Rn:<input type="number" className="number-input-small" value={config.calibration?.point1?.value?.[0] ?? 0} onChange={e => updateNested(['calibration', 'point1', 'value', '0'], parseFloat(e.target.value))} /></label>
-            <label>Val Kn:<input type="number" className="number-input-small" value={config.calibration?.point1?.value?.[1] ?? 0} onChange={e => updateNested(['calibration', 'point1', 'value', '1'], parseFloat(e.target.value))} /></label>
+            <label>Chart Scale Value (Rn):<input type="number" className="number-input-small" value={config.calibration?.point1?.value?.[0] ?? 0} onChange={e => updateNested(['calibration', 'point1', 'value', '0'], parseFloat(e.target.value))} /></label>
+            <label>Chart Scale Value (Kn):<input type="number" className="number-input-small" value={config.calibration?.point1?.value?.[1] ?? 0} onChange={e => updateNested(['calibration', 'point1', 'value', '1'], parseFloat(e.target.value))} /></label>
           </div>
         </div>
 
-        <div className="coord-group">
-          <strong>P2 (Reference)</strong>
+        <div className={`coord-group ${pickingMode === 'p2' ? 'picking-highlight' : ''}`} style={{ marginTop: '0.75rem' }}>
+          <div className="coord-group-header">
+            <strong>P2 (Reference Point)</strong>
+            <button 
+              className={`pick-btn ${pickingMode === 'p2' ? 'active' : ''}`}
+              onClick={() => setPickingMode(pickingMode === 'p2' ? null : 'p2')}
+              title="Click on the diagram to set this point"
+            >
+              <MousePointer2 size={14} /> {pickingMode === 'p2' ? 'Picking...' : 'Pick from diagram'}
+            </button>
+          </div>
+          <p className="field-help">A point far from origin (e.g. top-right limit) to set the chart scale accurately.</p>
           <div className="config-row">
-            <label>Pixel X:<input type="number" className="number-input-small" value={config.calibration?.point2?.pixel?.[0] ?? 0} onChange={e => updateNested(['calibration', 'point2', 'pixel', '0'], parseFloat(e.target.value))} /></label>
-            <label>Pixel Y:<input type="number" className="number-input-small" value={config.calibration?.point2?.pixel?.[1] ?? 0} onChange={e => updateNested(['calibration', 'point2', 'pixel', '1'], parseFloat(e.target.value))} /></label>
+            <label>Pixel position X:<input type="number" className="number-input-small" value={config.calibration?.point2?.pixel?.[0] ?? 0} onChange={e => updateNested(['calibration', 'point2', 'pixel', '0'], parseFloat(e.target.value))} /></label>
+            <label>Pixel position Y:<input type="number" className="number-input-small" value={config.calibration?.point2?.pixel?.[1] ?? 0} onChange={e => updateNested(['calibration', 'point2', 'pixel', '1'], parseFloat(e.target.value))} /></label>
           </div>
           <div className="config-row">
-            <label>Val Rn:<input type="number" className="number-input-small" value={config.calibration?.point2?.value?.[0] ?? 0} onChange={e => updateNested(['calibration', 'point2', 'value', '0'], parseFloat(e.target.value))} /></label>
-            <label>Val Kn:<input type="number" className="number-input-small" value={config.calibration?.point2?.value?.[1] ?? 0} onChange={e => updateNested(['calibration', 'point2', 'value', '1'], parseFloat(e.target.value))} /></label>
+            <label>Chart Scale Value (Rn):<input type="number" className="number-input-small" value={config.calibration?.point2?.value?.[0] ?? 0} onChange={e => updateNested(['calibration', 'point2', 'value', '0'], parseFloat(e.target.value))} /></label>
+            <label>Chart Scale Value (Kn):<input type="number" className="number-input-small" value={config.calibration?.point2?.value?.[1] ?? 0} onChange={e => updateNested(['calibration', 'point2', 'value', '1'], parseFloat(e.target.value))} /></label>
           </div>
         </div>
-      </details>
 
-      <details className="config-section">
-        <summary id="h-title" className="section-title">
-          <div className="summary-content">Horizontal Line Setting</div>
-          <ChevronDown size={18} className="dropdown-icon" />
-        </summary>
-        <p className="help-text">Controls the rendering of the capacity limit mapping horizontally across the Rn axis based on vertical Kn depth.</p>
-        <div className="config-row">
-           <label>Color: <input type="color" value={config.style?.horizontal_line?.color || '#000000'} onChange={e => updateNested(['style', 'horizontal_line', 'color'], e.target.value)}/></label>
-           <label>Width: <input type="number" step="0.1" className="number-input-small" value={config.style?.horizontal_line?.linewidth ?? 1} onChange={e => updateNested(['style', 'horizontal_line', 'linewidth'], parseFloat(e.target.value))}/></label>
-           <label>Alpha: <input type="number" step="0.1" min="0" max="1" className="number-input-small" value={config.style?.horizontal_line?.alpha ?? 1} onChange={e => updateNested(['style', 'horizontal_line', 'alpha'], parseFloat(e.target.value))}/></label>
-           <label style={{ flex: 1.5 }}>Style: 
-             <select className="select-input-small" value={config.style?.horizontal_line?.linestyle || '-'} onChange={e => updateNested(['style', 'horizontal_line', 'linestyle'], e.target.value)}>
-               <option value="-">Solid (-)</option>
-               <option value="--">Dashed (--)</option>
-               <option value="-.">Dash-Dot (-.)</option>
-               <option value=":">Dotted (:)</option>
-             </select>
-           </label>
-        </div>
-        <div className="conditional-box">
-           <strong>Conditional Limits</strong>
-           {(config.style?.horizontal_line?.conditional_limits || []).map((limit: any, i: number) => (
-             <div key={i} className="limit-row">
-                <label>If Kn &gt; <input type="number" step="0.01" className="number-input-small" value={limit.if_kn_above ?? 0} onChange={e => updateConditionalLimit('horizontal_line', i, 'if_kn_above', parseFloat(e.target.value))}/></label>
-                <label>End Rn: <input type="number" step="0.01" className="number-input-small" value={limit.then_end_rn ?? 0} onChange={e => updateConditionalLimit('horizontal_line', i, 'then_end_rn', parseFloat(e.target.value))}/></label>
-                <button className="del-btn flex-button" aria-label="Delete rule" onClick={() => removeConditionalLimit('horizontal_line', i)}><Trash2 size={12} /></button>
-             </div>
-           ))}
-           <button className="secondary-button flex-button" onClick={() => addConditionalLimit('horizontal_line')}><Plus size={16} /> Add Rule</button>
-        </div>
-      </details>
-
-      <details className="config-section">
-        <summary id="v-title" className="section-title">
-          <div className="summary-content">Vertical Line Setting</div>
-          <ChevronDown size={18} className="dropdown-icon" />
-        </summary>
-        <p className="help-text">Controls the limit mapping spanning vertically along the Kn axis driven by lateral Rn capacity thresholds.</p>
-        <div className="config-row">
-           <label>Color: <input type="color" value={config.style?.vertical_line?.color || '#000000'} onChange={e => updateNested(['style', 'vertical_line', 'color'], e.target.value)}/></label>
-           <label>Width: <input type="number" step="0.1" className="number-input-small" value={config.style?.vertical_line?.linewidth ?? 1} onChange={e => updateNested(['style', 'vertical_line', 'linewidth'], parseFloat(e.target.value))}/></label>
-           <label>Alpha: <input type="number" step="0.1" min="0" max="1" className="number-input-small" value={config.style?.vertical_line?.alpha ?? 1} onChange={e => updateNested(['style', 'vertical_line', 'alpha'], parseFloat(e.target.value))}/></label>
-           <label style={{ flex: 1.5 }}>Style: 
-             <select className="select-input-small" value={config.style?.vertical_line?.linestyle || '-'} onChange={e => updateNested(['style', 'vertical_line', 'linestyle'], e.target.value)}>
-               <option value="-">Solid (-)</option>
-               <option value="--">Dashed (--)</option>
-               <option value="-.">Dash-Dot (-.)</option>
-               <option value=":">Dotted (:)</option>
-             </select>
-           </label>
-        </div>
-        <div className="conditional-box">
-           <strong>Conditional Limits</strong>
-           {(config.style?.vertical_line?.conditional_limits || []).map((limit: any, i: number) => (
-             <div key={i} className="limit-row">
-                <label>If Rn &gt; <input type="number" step="0.01" className="number-input-small" value={limit.if_rn_above ?? 0} onChange={e => updateConditionalLimit('vertical_line', i, 'if_rn_above', parseFloat(e.target.value))}/></label>
-                <label>End Kn: <input type="number" step="0.01" className="number-input-small" value={limit.then_end_kn ?? 0} onChange={e => updateConditionalLimit('vertical_line', i, 'then_end_kn', parseFloat(e.target.value))}/></label>
-                <button className="del-btn flex-button" aria-label="Delete rule" onClick={() => removeConditionalLimit('vertical_line', i)}><Trash2 size={12} /></button>
-             </div>
-           ))}
-           <button className="secondary-button flex-button" onClick={() => addConditionalLimit('vertical_line')}><Plus size={16} /> Add Rule</button>
-        </div>
-      </details>
-
-      <details className="config-section">
-        <summary id="r-title" className="section-title">
-          <div className="summary-content">Radial Line & Target</div>
-          <ChevronDown size={18} className="dropdown-icon" />
-        </summary>
-        <p className="help-text">Configures the extension projection vector spanning directly from the origin through the evaluated target load.</p>
-        <div className="config-row">
-           <label>Extend Px: <input type="number" className="number-input-small" value={config.style?.radial_line?.extension ?? 0} onChange={e => updateNested(['style', 'radial_line', 'extension'], parseFloat(e.target.value))}/></label>
-           <label>Color: <input type="color" value={config.style?.radial_line?.color || '#000000'} onChange={e => updateNested(['style', 'radial_line', 'color'], e.target.value)}/></label>
-           <label>Width: <input type="number" step="0.1" className="number-input-small" value={config.style?.radial_line?.linewidth ?? 1} onChange={e => updateNested(['style', 'radial_line', 'linewidth'], parseFloat(e.target.value))}/></label>
-           <label>Alpha: <input type="number" step="0.1" min="0" max="1" className="number-input-small" value={config.style?.radial_line?.alpha ?? 1} onChange={e => updateNested(['style', 'radial_line', 'alpha'], parseFloat(e.target.value))}/></label>
-        </div>
-        <div className="config-row" style={{ marginTop: '0.5rem' }}>
-           <label>Style: 
-             <select className="select-input-small" value={config.style?.radial_line?.linestyle || '-'} onChange={e => updateNested(['style', 'radial_line', 'linestyle'], e.target.value)}>
-               <option value="-">Solid (-)</option>
-               <option value="--">Dashed (--)</option>
-               <option value="-.">Dash-Dot (-.)</option>
-               <option value=":">Dotted (:)</option>
-             </select>
-           </label>
-        </div>
-      </details>
-
-      <details className="config-section">
-        <summary id="d-title" className="section-title">
-          <div className="summary-content">Dot Marker</div>
-          <ChevronDown size={18} className="dropdown-icon" />
-        </summary>
-        <p className="help-text">Styling for the evaluated target point marker at the (Rn, Kn) layout.</p>
-        <div className="config-row">
-           <label>Color: <input type="color" value={config.style?.dot?.color || '#000000'} onChange={e => updateNested(['style', 'dot', 'color'], e.target.value)}/></label>
-           <label>Size: <input type="number" step="1" className="number-input-small" value={config.style?.dot?.markersize ?? 3} onChange={e => updateNested(['style', 'dot', 'markersize'], parseFloat(e.target.value))}/></label>
-        </div>
-        <label className="checkbox-label">
-           <input type="checkbox" className="checkbox-input" checked={config.style?.dot?.visible ?? false} onChange={e => updateNested(['style', 'dot', 'visible'], e.target.checked)} />
-           Show Dot Marker
+        <label className="checkbox-label" style={{ marginTop: '0.75rem' }}>
+           <input type="checkbox" className="checkbox-input" checked={config.calibration?.show_markers ?? true} onChange={e => updateNested(['calibration', 'show_markers'], e.target.checked)} />
+           Show Calibration Markers
         </label>
       </details>
 
       <details className="config-section">
-        <summary id="l-title" className="section-title">
-          <div className="summary-content">Data Label</div>
-          <ChevronDown size={18} className="dropdown-icon" />
-        </summary>
-        <p className="help-text">Styling for the textual label attached to the evaluated point displaying its precise coordinates.</p>
-        <div className="config-row">
-           <label>Color: <input type="color" value={config.style?.label?.color || '#FFFFFF'} onChange={e => updateNested(['style', 'label', 'color'], e.target.value)}/></label>
-           <label>BG Color: <input type="color" value={config.style?.label?.facecolor || '#000000'} onChange={e => updateNested(['style', 'label', 'facecolor'], e.target.value)}/></label>
-           <label>Size: <input type="number" className="number-input-small" value={config.style?.label?.fontsize ?? 10} onChange={e => updateNested(['style', 'label', 'fontsize'], parseFloat(e.target.value))}/></label>
-           <label>Alpha: <input type="number" step="0.1" min="0" max="1" className="number-input-small" value={config.style?.label?.alpha ?? 0.8} onChange={e => updateNested(['style', 'label', 'alpha'], parseFloat(e.target.value))}/></label>
-        </div>
-        <div className="config-row" style={{ marginTop: '0.5rem' }}>
-           <label>Padding: <input type="number" step="0.1" className="number-input-small" value={config.style?.label?.padding ?? 0.3} onChange={e => updateNested(['style', 'label', 'padding'], parseFloat(e.target.value))}/></label>
-           <label style={{ flex: 1.5 }}>Weight: 
-             <select className="select-input-small" value={config.style?.label?.fontweight || 'normal'} onChange={e => updateNested(['style', 'label', 'fontweight'], e.target.value)}>
-               <option value="normal">Normal</option>
-               <option value="bold">Bold</option>
-               <option value="bolder">Bolder</option>
-               <option value="lighter">Lighter</option>
-             </select>
-           </label>
-        </div>
-        <label className="checkbox-label">
-           <input type="checkbox" className="checkbox-input" checked={config.style?.label?.visible ?? false} onChange={e => updateNested(['style', 'label', 'visible'], e.target.checked)} />
-           Show Data Label
-        </label>
+         <summary id="h-title" className="section-title">
+           <div className="summary-content">Horizontal Line Setting</div>
+           <ChevronDown size={18} className="dropdown-icon" />
+         </summary>
+         <p className="help-text">Capacity limit mapping horizontally across the Rn axis.</p>
+         <div className="config-row">
+            <label>Color: <input type="color" value={config.style?.horizontal_line?.color || '#000000'} onChange={e => updateNested(['style', 'horizontal_line', 'color'], e.target.value)}/></label>
+            <label>Width: <input type="number" step="0.1" className="number-input-small" value={config.style?.horizontal_line?.linewidth ?? 1} onChange={e => updateNested(['style', 'horizontal_line', 'linewidth'], parseFloat(e.target.value))}/></label>
+            <label>Alpha: <input type="number" step="0.1" min="0" max="1" className="number-input-small" value={config.style?.horizontal_line?.alpha ?? 1} onChange={e => updateNested(['style', 'horizontal_line', 'alpha'], parseFloat(e.target.value))}/></label>
+            <label style={{ flex: 1.5 }}>Style: 
+              <select className="select-input-small" value={config.style?.horizontal_line?.linestyle || '-'} onChange={e => updateNested(['style', 'horizontal_line', 'linestyle'], e.target.value)}>
+                <option value="-">Solid (-)</option>
+                <option value="--">Dashed (--)</option>
+                <option value="-.">Dash-Dot (-.)</option>
+                <option value=":">Dotted (:)</option>
+              </select>
+            </label>
+         </div>
+         <div className="conditional-box">
+            <strong>Conditional Limits</strong>
+            {(config.style?.horizontal_line?.conditional_limits || []).map((limit: any, i: number) => (
+              <div key={i} className="limit-row">
+                 <label>If Kn &gt; <input type="number" step="0.01" className="number-input-small" value={limit.if_kn_above ?? 0} onChange={e => updateConditionalLimit('horizontal_line', i, 'if_kn_above', parseFloat(e.target.value))}/></label>
+                 <label>End Rn: <input type="number" step="0.01" className="number-input-small" value={limit.then_end_rn ?? 0} onChange={e => updateConditionalLimit('horizontal_line', i, 'then_end_rn', parseFloat(e.target.value))}/></label>
+                 <button className="del-btn flex-button" aria-label="Delete rule" onClick={() => removeConditionalLimit('horizontal_line', i)}><Trash2 size={12} /></button>
+              </div>
+            ))}
+            <button className="secondary-button flex-button" onClick={() => addConditionalLimit('horizontal_line')}><Plus size={16} /> Add Rule</button>
+         </div>
       </details>
 
+      <details className="config-section">
+         <summary id="v-title" className="section-title">
+           <div className="summary-content">Vertical Line Setting</div>
+           <ChevronDown size={18} className="dropdown-icon" />
+         </summary>
+         <p className="help-text">Limit mapping spanning vertically along the Kn axis.</p>
+         <div className="config-row">
+            <label>Color: <input type="color" value={config.style?.vertical_line?.color || '#000000'} onChange={e => updateNested(['style', 'vertical_line', 'color'], e.target.value)}/></label>
+            <label>Width: <input type="number" step="0.1" className="number-input-small" value={config.style?.vertical_line?.linewidth ?? 1} onChange={e => updateNested(['style', 'vertical_line', 'linewidth'], parseFloat(e.target.value))}/></label>
+            <label>Alpha: <input type="number" step="0.1" min="0" max="1" className="number-input-small" value={config.style?.vertical_line?.alpha ?? 1} onChange={e => updateNested(['style', 'vertical_line', 'alpha'], parseFloat(e.target.value))}/></label>
+            <label style={{ flex: 1.5 }}>Style: 
+              <select className="select-input-small" value={config.style?.vertical_line?.linestyle || '-'} onChange={e => updateNested(['style', 'vertical_line', 'linestyle'], e.target.value)}>
+                <option value="-">Solid (-)</option>
+                <option value="--">Dashed (--)</option>
+                <option value="-.">Dash-Dot (-.)</option>
+                <option value=":">Dotted (:)</option>
+              </select>
+            </label>
+         </div>
+         <div className="conditional-box">
+            <strong>Conditional Limits</strong>
+            {(config.style?.vertical_line?.conditional_limits || []).map((limit: any, i: number) => (
+              <div key={i} className="limit-row">
+                 <label>If Rn &gt; <input type="number" step="0.01" className="number-input-small" value={limit.if_rn_above ?? 0} onChange={e => updateConditionalLimit('vertical_line', i, 'if_rn_above', parseFloat(e.target.value))}/></label>
+                 <label>End Kn: <input type="number" step="0.01" className="number-input-small" value={limit.then_end_kn ?? 0} onChange={e => updateConditionalLimit('vertical_line', i, 'then_end_kn', parseFloat(e.target.value))}/></label>
+                 <button className="del-btn flex-button" aria-label="Delete rule" onClick={() => removeConditionalLimit('vertical_line', i)}><Trash2 size={12} /></button>
+              </div>
+            ))}
+            <button className="secondary-button flex-button" onClick={() => addConditionalLimit('vertical_line')}><Plus size={16} /> Add Rule</button>
+         </div>
+      </details>
+
+      <details className="config-section">
+         <summary id="r-title" className="section-title">
+           <div className="summary-content">Radial Line & Target</div>
+           <ChevronDown size={18} className="dropdown-icon" />
+         </summary>
+         <p className="help-text">Projection vector spanning from origin through the target load.</p>
+         <div className="config-row">
+            <label>Extend Px: <input type="number" className="number-input-small" value={config.style?.radial_line?.extension ?? 0} onChange={e => updateNested(['style', 'radial_line', 'extension'], parseFloat(e.target.value))}/></label>
+            <label>Color: <input type="color" value={config.style?.radial_line?.color || '#000000'} onChange={e => updateNested(['style', 'radial_line', 'color'], e.target.value)}/></label>
+            <label>Width: <input type="number" step="0.1" className="number-input-small" value={config.style?.radial_line?.linewidth ?? 1} onChange={e => updateNested(['style', 'radial_line', 'linewidth'], parseFloat(e.target.value))}/></label>
+            <label>Alpha: <input type="number" step="0.1" min="0" max="1" className="number-input-small" value={config.style?.radial_line?.alpha ?? 1} onChange={e => updateNested(['style', 'radial_line', 'alpha'], parseFloat(e.target.value))}/></label>
+         </div>
+      </details>
     </div>
   );
 };
