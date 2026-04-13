@@ -12,18 +12,31 @@
   },
   "style": {
     "horizontal_line": {
+      "start_rn": 0.0,
+      "end_rn": 0.348,
+      "conditional_limits": [
+        { "if_kn_above": 1.2, "then_end_rn": 0.26 },
+        { "if_kn_above": 1.7, "then_end_rn": 0.115 }
+      ],
       "color": "blue",
       "linestyle": "-",
       "linewidth": 0.7,
       "alpha": 1
     },
     "vertical_line": {
+      "start_kn": 0.0,
+      "end_kn": 2.02,
+      "conditional_limits": [
+        { "if_rn_above": 0.11, "then_end_kn": 1.68 },
+        { "if_rn_above": 0.26, "then_end_kn": 1.2 }
+      ],
       "color": "red",
       "linestyle": "-",
       "linewidth": 0.7,
       "alpha": 1
     },
     "radial_line": {
+      "extension": 50,
       "color": "yellow",
       "linestyle": "-",
       "linewidth": 0.7,
