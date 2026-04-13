@@ -364,7 +364,28 @@ summary.section-title {
   user-select: none;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
+  list-style: none;
+}
+
+summary.section-title::-webkit-details-marker {
+  display: none;
+}
+
+.summary-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+details.config-section > summary .dropdown-icon {
+  transition: transform 0.2s ease-in-out;
+  color: var(--ce-text-secondary);
+}
+
+details.config-section[open] > summary .dropdown-icon {
+  transform: rotate(180deg);
 }
 
 .help-text {
@@ -418,6 +439,37 @@ summary.section-title {
 
 .number-input-small:focus {
   border-color: var(--ce-blue-mid);
+}
+
+.select-input-small {
+  width: 100%;
+  background: var(--ce-bg-input);
+  border: 1px solid var(--ce-border);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  color: var(--ce-blue-dark);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  outline: none;
+}
+
+.select-input-small:focus {
+  border-color: var(--ce-blue-mid);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 12px;
+  color: var(--ce-text-secondary);
+  cursor: pointer;
+  margin-top: 0.25rem;
+}
+
+.checkbox-input {
+  cursor: pointer;
+  accent-color: var(--ce-blue-mid);
 }
 
 .conditional-box {
