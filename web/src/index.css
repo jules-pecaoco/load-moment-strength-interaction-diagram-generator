@@ -87,25 +87,28 @@ h1, h2, h3, h4, h5, h6 {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 1rem;
+  pointer-events: auto;
 }
 
 .modal-content {
-  background: var(--ce-bg-panel);
-  border: 1px solid var(--ce-border);
+  background: rgba(232, 228, 220, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(200, 196, 186, 0.6);
   border-radius: 12px;
   width: 100%;
-  max-width: 650px;
+  max-width: 550px;
   max-height: 90vh;
   overflow-y: auto;
   padding: 2rem;
   position: relative;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.10);
 }
 
 .modal-close {
@@ -324,9 +327,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .diagram-canvas {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  /* Sizing is now handled by DiagramCanvas.tsx for accurate click mapping */
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
   /* IMPORTANT: Leave transparent/white backgrounds alone for charts as per spec */
   background-color: #FFFFFF; 
   border: 1px solid var(--ce-border);
@@ -400,7 +404,7 @@ details.config-section[open] > summary .dropdown-icon {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  background: var(--ce-bg-page);
+  background: rgba(244, 242, 238, 0.5);
   padding: 0.5rem;
   border-radius: 8px;
 }
@@ -427,8 +431,8 @@ details.config-section[open] > summary .dropdown-icon {
 
 .number-input-small {
   width: 100%;
-  background: var(--ce-bg-input);
-  border: 1px solid var(--ce-border);
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(200, 196, 186, 0.6);
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   color: var(--ce-blue-dark);
@@ -443,8 +447,8 @@ details.config-section[open] > summary .dropdown-icon {
 
 .select-input-small {
   width: 100%;
-  background: var(--ce-bg-input);
-  border: 1px solid var(--ce-border);
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(200, 196, 186, 0.6);
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   color: var(--ce-blue-dark);
@@ -476,10 +480,10 @@ details.config-section[open] > summary .dropdown-icon {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  background: var(--ce-bg-page);
+  background: rgba(244, 242, 238, 0.45);
   padding: 0.75rem;
   border-radius: 8px;
-  border: 1px solid var(--ce-border);
+  border: 1px solid rgba(200, 196, 186, 0.5);
 }
 
 .conditional-box strong {
@@ -491,7 +495,7 @@ details.config-section[open] > summary .dropdown-icon {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--ce-bg-panel);
+  background: rgba(232, 228, 220, 0.4);
   padding: 0.25rem;
   border-radius: 4px;
 }
@@ -570,4 +574,135 @@ details.config-section[open] > summary .dropdown-icon {
   .sidebar {
     padding: 1.5rem 1rem;
   }
+}
+/* ... existing styles ... */
+
+.section-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ce-text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.upload-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.help-text-sidebar {
+  font-size: 10px;
+  color: var(--ce-text-secondary);
+  line-height: 1.3;
+}
+
+.sample-link {
+  font-size: 10px;
+  color: var(--ce-blue-mid);
+  text-decoration: underline;
+  font-weight: 600;
+  margin-top: 0.1rem;
+}
+
+.help-box-main {
+  background: rgba(208, 229, 245, 0.5);
+  border: 1px solid rgba(46, 109, 164, 0.35);
+  padding: 0.75rem;
+  border-radius: 8px;
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.help-box-main p {
+  font-size: 12px;
+  color: var(--ce-blue-dark);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.coord-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.pick-btn {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(200, 196, 186, 0.6);
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ce-blue-dark);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.2s;
+}
+
+.pick-btn:hover {
+  border-color: var(--ce-blue-mid);
+  background: var(--ce-bg-page);
+}
+
+.pick-btn.active {
+  background: var(--ce-blue-dark);
+  color: white;
+  border-color: var(--ce-blue-dark);
+  animation: pulse-picker 1.5s infinite;
+}
+
+@keyframes pulse-picker {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.picking-highlight {
+  outline: 2px solid var(--ce-blue-mid);
+  background: white !important;
+  box-shadow: 0 0 15px rgba(46, 109, 164, 0.2);
+}
+
+.field-help {
+  font-size: 11px;
+  color: var(--ce-text-muted);
+  font-style: italic;
+  margin-bottom: 0.5rem;
+}
+
+.canvas-container.picking-active {
+  position: relative;
+}
+
+.canvas-container.picking-active::after {
+  content: 'CLICK ON DIAGRAM TO SET POINT';
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ce-blue-dark);
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+  z-index: 20;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.canvas-container.picking-active .diagram-canvas {
+  outline: 4px solid var(--ce-blue-mid);
+  outline-offset: -4px;
 }
