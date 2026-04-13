@@ -184,6 +184,19 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--ce-blue-mid);
 }
 
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
 .number-input {
   width: 100%;
   background: var(--ce-bg-input);
