@@ -337,11 +337,11 @@ h1, h2, h3, h4, h5, h6 {
 .config-ui {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   padding-top: 0.5rem;
 }
 
-.config-section {
+details.config-section {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -349,13 +349,30 @@ h1, h2, h3, h4, h5, h6 {
   padding-top: 1rem;
 }
 
-.section-title {
+details.config-section[open] summary {
+  margin-bottom: 0.5rem;
+}
+
+summary.section-title {
   font-family: 'Inter', system-ui, sans-serif;
   font-weight: 600;
   color: var(--ce-blue-dark);
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.help-text {
+  font-size: 11px;
+  color: var(--ce-text-secondary);
+  line-height: 1.4;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
 }
 
 .coord-group {
