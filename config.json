@@ -1,0 +1,51 @@
+{
+  "image_path": "nominal-load.jpg",
+  "calibration": {
+    "point1": {
+      "pixel": [75, 467],
+      "value": [0.0, 0.0]
+    },
+    "point2": {
+      "pixel": [540, 25],
+      "value": [0.35, 2.0]
+    }
+  },
+  "style": {
+    "horizontal_line": {
+      "color": "blue",
+      "linestyle": "-",
+      "linewidth": 0.7,
+      "alpha": 1
+    },
+    "vertical_line": {
+      "color": "red",
+      "linestyle": "-",
+      "linewidth": 0.7,
+      "alpha": 1
+    },
+    "radial_line": {
+      "color": "yellow",
+      "linestyle": "-",
+      "linewidth": 0.7,
+      "alpha": 1
+    },
+    "dot": {
+      "visible": false,
+      "color": "blue",
+      "markersize": 3
+    },
+    "label": {
+      "visible": false,
+      "fontsize": 10,
+      "color": "white",
+      "fontweight": "bold",
+      "facecolor": "red",
+      "alpha": 0.8,
+      "padding": 0.3
+    }
+  },
+  "output": {
+    "default_filename": "result.png",
+    "dpi": 150
+  }
+}
