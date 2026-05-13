@@ -70,6 +70,7 @@ export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({
     if (!canvas || !image || !config?.calibration) return;
 
     drawInteractionDiagram(canvas, image, kn, rn, config);
+    drawCustomLines(canvas, customLines);
 
     // Draw custom lines on top
     drawCustomLines(canvas, customLines);

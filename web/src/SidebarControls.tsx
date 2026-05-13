@@ -217,7 +217,18 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         </div>
       </section>
 
-      <hr style={{ borderTop: "1px solid var(--ce-border)", borderBottom: "none", margin: 0 }} />
+      {/* Custom Lines Section */}
+      <section className="control-group custom-lines-section">
+        <div className="custom-lines-header">
+          <label style={{ flex: 1 }}>CUSTOM LINES</label>
+          <button
+            className="add-line-btn flex-button"
+            onClick={addCustomLine}
+            title="Add a new custom line"
+          >
+            <Plus size={14} /> Add Line
+          </button>
+        </div>
 
       {/* CUSTOM LINES */}
       <section className="control-group custom-lines-section">
@@ -456,10 +467,210 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           <Save size={18} /> Save Current Image
         </button>
 
-        <button className="secondary-button flex-button" onClick={() => setIsConfigOpen(true)}>
-          <Settings size={18} /> Settings Configuration
-        </button>
+        {customLines.map((line, index) => (
+          <div key={line.id} className={`custom-line-card${expandedLineId === line.id ? ' expanded' : ''}`}>
+            <div className="custom-line-card-header" onClick={() => toggleExpand(line.id)}>
+              <div className="line-color-indicator" style={{ backgroundColor: line.color }} />
+              <span className="line-title">
+                {line.label || `Line ${index + 1}`}
+              </span>
+              <div className="line-card-actions">
+                <button
+                  className="icon-btn"
+                  title={line.enabled ? 'Hide' : 'Show'}
+                  onClick={(e) => { e.stopPropagation(); updateCustomLine(line.id, { enabled: !line.enabled }); }}
+                >
+                  {line.enabled ? <Eye size={14} /> : <EyeOff size={14} />}
+                </button>
+                <button
+                  className="icon-btn danger"
+                  title="Delete line"
+                  onClick={(e) => { e.stopPropagation(); removeCustomLine(line.id); }}
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
+
+            {expandedLineId === line.id && (
+              <div className="custom-line-card-body">
+                {/* Label */}
+                <div className="cl-field">
+                  <label>Label</label>
+                  <input
+                    type="text"
+                    className="number-input-small"
+                    placeholder="e.g. My Line"
+                    value={line.label}
+                    onChange={(e) => updateCustomLine(line.id, { label: e.target.value })}
+                  />
+                </div>
+
+                {/* Anchor Point */}
+                <div className="cl-field-group">
+                  <span className="cl-field-group-title">
+                    Anchor Point (Fixed)
+                    <button
+                      className={`pick-anchor-btn${pickingAnchorId === line.id ? ' active' : ''}`}
+                      onClick={() => setPickingAnchorId(pickingAnchorId === line.id ? null : line.id)}
+                      title="Pick anchor from diagram"
+                    >
+                      <Crosshair size={12} />
+                      {pickingAnchorId === line.id ? ' Picking...' : ' Pick'}
+                    </button>
+                  </span>
+                  <div className="cl-field-row">
+                    <div className="cl-field">
+                      <label>X (px)</label>
+                      <input
+                        type="number"
+                        className="number-input-small"
+                        value={line.anchorX}
+                        onChange={(e) => updateCustomLine(line.id, { anchorX: parseFloat(e.target.value) || 0 })}
+                      />
+                    </div>
+                    <div className="cl-field">
+                      <label>Y (px)</label>
+                      <input
+                        type="number"
+                        className="number-input-small"
+                        value={line.anchorY}
+                        onChange={(e) => updateCustomLine(line.id, { anchorY: parseFloat(e.target.value) || 0 })}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Angle & Length */}
+                <div className="cl-field-group">
+                  <span className="cl-field-group-title">Angle & Dimensions</span>
+                  <div className="cl-field">
+                    <label>Angle: <strong>{line.angle}°</strong></label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="360"
+                      step="1"
+                      value={line.angle}
+                      onChange={(e) => updateCustomLine(line.id, { angle: parseFloat(e.target.value) })}
+                      className="range-slider"
+                    />
+                    <input
+                      type="number"
+                      className="number-input-small"
+                      step="1"
+                      value={line.angle}
+                      onChange={(e) => updateCustomLine(line.id, { angle: parseFloat(e.target.value) || 0 })}
+                    />
+                  </div>
+                  <div className="cl-field">
+                    <label>Length (px): <strong>{line.length}</strong></label>
+                    <input
+                      type="range"
+                      min="10"
+                      max="800"
+                      step="1"
+                      value={line.length}
+                      onChange={(e) => updateCustomLine(line.id, { length: parseFloat(e.target.value) })}
+                      className="range-slider"
+                    />
+                    <input
+                      type="number"
+                      className="number-input-small"
+                      step="1"
+                      value={line.length}
+                      onChange={(e) => updateCustomLine(line.id, { length: parseFloat(e.target.value) || 10 })}
+                    />
+                  </div>
+                </div>
+
+                {/* Styling */}
+                <div className="cl-field-group">
+                  <span className="cl-field-group-title">Styling</span>
+                  <div className="cl-field-row">
+                    <div className="cl-field">
+                      <label>Color</label>
+                      <input
+                        type="color"
+                        value={line.color}
+                        onChange={(e) => updateCustomLine(line.id, { color: e.target.value })}
+                      />
+                    </div>
+                    <div className="cl-field">
+                      <label>Width</label>
+                      <input
+                        type="number"
+                        className="number-input-small"
+                        step="0.5"
+                        min="0.5"
+                        max="10"
+                        value={line.lineWidth}
+                        onChange={(e) => updateCustomLine(line.id, { lineWidth: parseFloat(e.target.value) || 1 })}
+                      />
+                    </div>
+                  </div>
+                  <div className="cl-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '0.5rem' }}>
+                    <input
+                      type="checkbox"
+                      id={`dash-${line.id}`}
+                      checked={line.lineDash}
+                      onChange={(e) => updateCustomLine(line.id, { lineDash: e.target.checked })}
+                    />
+                    <label htmlFor={`dash-${line.id}`} style={{ fontSize: '12px', cursor: 'pointer' }}>Dashed Line</label>
+                  </div>
+                  <div className="cl-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '0.5rem' }}>
+                    <input
+                      type="checkbox"
+                      id={`anchor-${line.id}`}
+                      checked={line.showAnchor}
+                      onChange={(e) => updateCustomLine(line.id, { showAnchor: e.target.checked })}
+                    />
+                    <label htmlFor={`anchor-${line.id}`} style={{ fontSize: '12px', cursor: 'pointer' }}>Show Anchor Point</label>
+                  </div>
+                  <div className="cl-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '0.5rem' }}>
+                    <input
+                      type="checkbox"
+                      id={`endpoint-${line.id}`}
+                      checked={line.showEndpoint}
+                      onChange={(e) => updateCustomLine(line.id, { showEndpoint: e.target.checked })}
+                    />
+                    <label htmlFor={`endpoint-${line.id}`} style={{ fontSize: '12px', cursor: 'pointer' }}>Show Endpoint</label>
+                  </div>
+                </div>
+
+                {/* Auto-Calibrate Helper */}
+                <div className="cl-field-group">
+                  <span className="cl-field-group-title">Quick Actions</span>
+                  <button
+                    className="secondary-button flex-button"
+                    style={{ fontSize: '11px', padding: '0.3rem' }}
+                    onClick={() => {
+                      if (!config?.calibration) return;
+                      // Auto-calibrate: set anchor to the current Rn/Kn intersection point
+                      const p1 = config.calibration.point1;
+                      const p2 = config.calibration.point2;
+                      const transform = calibrate(
+                        p1.pixel as [number, number],
+                        p1.value as [number, number],
+                        p2.pixel as [number, number],
+                        p2.value as [number, number]
+                      );
+                      const [px, py] = toPixel(rn, kn, transform);
+                      updateCustomLine(line.id, { anchorX: Math.round(px), anchorY: Math.round(py) });
+                    }}
+                  >
+                    <RotateCcw size={12} /> Snap Anchor to Current (Rn, Kn)
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
       </section>
+
+      <button className="secondary-button flex-button" onClick={() => setIsConfigOpen(true)}>
+        <Settings size={18} /> Settings Configuration
+      </button>
 
       <div className="info-card">
         <p>Fine-tune calibration points and visual styles in settings to match your specific chart scale.</p>

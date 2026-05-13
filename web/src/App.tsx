@@ -53,21 +53,29 @@ function App() {
       .catch(err => console.error("Could not load config.json:", err));
   }, []);
 
-  const handlePointPicked = (x: number, y: number) => {
-    if (!pickingMode || !config) return;
+  const addCustomLine = () => {
+    setCustomLines(prev => [...prev, createDefaultLine()]);
+  };
 
-    const newConfig = JSON.parse(JSON.stringify(config));
-    const pointKey = pickingMode === 'p1' ? 'point1' : 'point2';
-    
-    if (!newConfig.calibration) newConfig.calibration = {};
-    if (!newConfig.calibration[pointKey]) newConfig.calibration[pointKey] = {};
-    if (!newConfig.calibration[pointKey].pixel) newConfig.calibration[pointKey].pixel = [0, 0];
-    
-    newConfig.calibration[pointKey].pixel[0] = Math.round(x);
-    newConfig.calibration[pointKey].pixel[1] = Math.round(y);
-    
-    setConfig(newConfig);
-    setPickingMode(null); // Exit picking mode after selection
+  const updateCustomLine = (id: string, updates: Partial<CustomLine>) => {
+    setCustomLines(prev =>
+      prev.map(line => line.id === id ? { ...line, ...updates } : line)
+    );
+  };
+
+  const removeCustomLine = (id: string) => {
+    setCustomLines(prev => prev.filter(line => line.id !== id));
+    if (pickingAnchorId === id) setPickingAnchorId(null);
+  };
+
+  const handleCanvasClick = (pixelX: number, pixelY: number) => {
+    if (pickingAnchorId) {
+      updateCustomLine(pickingAnchorId, {
+        anchorX: Math.round(pixelX),
+        anchorY: Math.round(pixelY),
+      });
+      setPickingAnchorId(null);
+    }
   };
 
   // Custom line CRUD
