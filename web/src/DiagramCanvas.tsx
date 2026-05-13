@@ -1,15 +1,20 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { drawInteractionDiagram } from './lib/renderDiagram';
+import { drawCustomLines } from './lib/renderCustomLines';
+import type { CustomLine } from './App';
 
 interface DiagramCanvasProps {
   kn: number;
   rn: number;
   config: any;
-  pickingMode: 'p1' | 'p2' | null;
-  onPointPicked: (x: number, y: number) => void;
+  customLines: CustomLine[];
+  pickingAnchorId: string | null;
+  onCanvasClick: (pixelX: number, pixelY: number) => void;
 }
 
-export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({ kn, rn, config, pickingMode, onPointPicked }) => {
+export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({
+  kn, rn, config, customLines, pickingAnchorId, onCanvasClick,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
@@ -64,56 +69,50 @@ export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({ kn, rn, config, pi
     if (!canvas || !image || !config?.calibration) return;
 
     drawInteractionDiagram(canvas, image, kn, rn, config);
+    drawCustomLines(canvas, customLines);
 
-    // Draw P1 and P2 calibration point markers on the canvas
-    const showMarkers = config.calibration?.show_markers ?? true;
-    const ctx = canvas.getContext('2d');
-    if (ctx && showMarkers) {
-      const p1px = config.calibration?.point1?.pixel;
-      const p2px = config.calibration?.point2?.pixel;
+  }, [kn, rn, config, image, customLines]);
 
-      const drawMarker = (px: number[], color: string, label: string) => {
-        if (!px || px.length < 2) return;
-        const x = px[0], y = px[1];
-        const arm = 12; // crosshair arm length in image pixels
+  const handleClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!pickingAnchorId) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-        ctx.save();
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
-        ctx.globalAlpha = 0.9;
+    const rect = canvas.getBoundingClientRect();
 
-        // Crosshair
-        ctx.beginPath();
-        ctx.moveTo(x - arm, y); ctx.lineTo(x + arm, y);
-        ctx.moveTo(x, y - arm); ctx.lineTo(x, y + arm);
-        ctx.stroke();
+    // Account for object-fit: contain letterboxing.
+    // The canvas content maintains its aspect ratio inside the CSS rect,
+    // so the rendered area may be smaller than rect on one axis.
+    const canvasAspect = canvas.width / canvas.height;
+    const rectAspect = rect.width / rect.height;
 
-        // Circle
-        ctx.beginPath();
-        ctx.arc(x, y, arm * 0.6, 0, Math.PI * 2);
-        ctx.stroke();
+    let renderedWidth: number, renderedHeight: number;
+    let offsetX: number, offsetY: number;
 
-        // Label badge
-        ctx.font = 'bold 11px Inter, sans-serif';
-        const tw = ctx.measureText(label).width;
-        const bx = x + arm + 4, by = y - arm;
-        ctx.fillStyle = color;
-        ctx.globalAlpha = 0.85;
-        ctx.beginPath();
-        ctx.roundRect(bx - 3, by - 12, tw + 6, 16, 3);
-        ctx.fill();
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = '#fff';
-        ctx.fillText(label, bx, by);
-
-        ctx.restore();
-      };
-
-      drawMarker(p1px, '#2E6DA4', 'P1');
-      drawMarker(p2px, '#D84C2A', 'P2');
+    if (canvasAspect > rectAspect) {
+      // Canvas is wider than rect → content is full-width, letterboxed vertically
+      renderedWidth = rect.width;
+      renderedHeight = rect.width / canvasAspect;
+      offsetX = 0;
+      offsetY = (rect.height - renderedHeight) / 2;
+    } else {
+      // Canvas is taller than rect → content is full-height, letterboxed horizontally
+      renderedHeight = rect.height;
+      renderedWidth = rect.height * canvasAspect;
+      offsetX = (rect.width - renderedWidth) / 2;
+      offsetY = 0;
     }
 
-  }, [kn, rn, config, image]);
+    // Position within the rendered content area
+    const contentX = e.clientX - rect.left - offsetX;
+    const contentY = e.clientY - rect.top - offsetY;
+
+    // Convert to native canvas coordinates
+    const pixelX = (contentX / renderedWidth) * canvas.width;
+    const pixelY = (contentY / renderedHeight) * canvas.height;
+
+    onCanvasClick(pixelX, pixelY);
+  }, [pickingAnchorId, onCanvasClick]);
 
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!pickingMode || !image || !canvasRef.current) return;
@@ -151,14 +150,10 @@ export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({ kn, rn, config, pi
   return (
     <div ref={containerRef} className={`canvas-container ${pickingMode ? 'picking-active' : ''}`}>
       {!image && <div className="loading-card">Loading image...</div>}
-      <canvas 
-        ref={canvasRef} 
-        className="diagram-canvas"
-        style={{ 
-          ...canvasStyle,
-          cursor: pickingMode ? 'crosshair' : 'default',
-        }}
-        onClick={handleCanvasClick}
+      <canvas
+        ref={canvasRef}
+        className={`diagram-canvas${pickingAnchorId ? ' picking-mode' : ''}`}
+        onClick={handleClick}
       />
     </div>
   );
