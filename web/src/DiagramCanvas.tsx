@@ -1,15 +1,21 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { drawInteractionDiagram } from './lib/renderDiagram';
+import { drawCustomLines } from './lib/renderCustomLines';
+import type { CustomLine } from './App';
 
 interface DiagramCanvasProps {
   kn: number;
   rn: number;
   config: any;
   pickingMode: 'p1' | 'p2' | null;
-  onPointPicked: (x: number, y: number) => void;
+  pickingAnchorId: string | null;
+  onCanvasClick: (x: number, y: number) => void;
+  customLines: CustomLine[];
 }
 
-export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({ kn, rn, config, pickingMode, onPointPicked }) => {
+export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({
+  kn, rn, config, pickingMode, pickingAnchorId, onCanvasClick, customLines,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
@@ -65,6 +71,9 @@ export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({ kn, rn, config, pi
 
     drawInteractionDiagram(canvas, image, kn, rn, config);
 
+    // Draw custom lines on top
+    drawCustomLines(canvas, customLines);
+
     // Draw P1 and P2 calibration point markers on the canvas
     const showMarkers = config.calibration?.show_markers ?? true;
     const ctx = canvas.getContext('2d');
@@ -113,10 +122,12 @@ export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({ kn, rn, config, pi
       drawMarker(p2px, '#D84C2A', 'P2');
     }
 
-  }, [kn, rn, config, image]);
+  }, [kn, rn, config, image, customLines]);
+
+  const isPickingAnything = pickingMode || pickingAnchorId;
 
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!pickingMode || !image || !canvasRef.current) return;
+    if (!isPickingAnything || !image || !canvasRef.current) return;
 
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
@@ -144,19 +155,19 @@ export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({ kn, rn, config, pi
     const imgY = mouseY * scaleY;
 
     if (imgX >= 0 && imgX <= image.width && imgY >= 0 && imgY <= image.height) {
-      onPointPicked(imgX, imgY);
+      onCanvasClick(imgX, imgY);
     }
   };
 
   return (
-    <div ref={containerRef} className={`canvas-container ${pickingMode ? 'picking-active' : ''}`}>
+    <div ref={containerRef} className={`canvas-container ${isPickingAnything ? 'picking-active' : ''}`}>
       {!image && <div className="loading-card">Loading image...</div>}
       <canvas 
         ref={canvasRef} 
         className="diagram-canvas"
         style={{ 
           ...canvasStyle,
-          cursor: pickingMode ? 'crosshair' : 'default',
+          cursor: isPickingAnything ? 'crosshair' : 'default',
         }}
         onClick={handleCanvasClick}
       />

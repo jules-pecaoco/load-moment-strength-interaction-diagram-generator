@@ -1,0 +1,16 @@
+{
+  "projectId": "prj_RDlHWR2ExzelE0j4tmp7qGKAwOGD",
+  "orgId": "team_X6fgL5Iw1gNWqhafTI4QmKaM",
+  "projectName": "load-moment-strength-interaction-diagram-generator",
+  "settings": {
+    "createdAt": 1776077088074,
+    "framework": "vite",
+    "devCommand": null,
+    "installCommand": null,
+    "buildCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": "web",
+    "directoryListing": false,
+    "nodeVersion": "24.x"
+  }
+}
