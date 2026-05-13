@@ -47,40 +47,40 @@ export function drawInteractionDiagram(
 
     // Draw Horizontal Line
     const hStyle = { ...defStyle, ...(style.horizontal_line || {}) };
-    let hEndRn = hStyle.end_rn ?? 'full';
+    // Default end to P2's Rn value ('auto') so lines match the chart boundary
+    let hEndRn = hStyle.end_rn ?? 'auto';
     const hOverride = evaluateConditionalLimits(hStyle.conditional_limits, kn, rn, 'end_rn');
     if (hOverride !== null) hEndRn = hOverride;
+    if (hEndRn === 'auto') hEndRn = p2.value[0]; // Use P2 Rn as boundary
+    if (hEndRn === 'full') hEndRn = p2.value[0]; // Legacy 'full' also maps to P2
+
+    let hStartRn = hStyle.start_rn ?? 0; // default start at origin Rn value (0)
 
     applyStyle(hStyle);
     ctx.beginPath();
-    if (hEndRn === 'full') {
-      ctx.moveTo(0, py);
-      ctx.lineTo(canvas.width, py);
-    } else {
-      const startPx = resolveBoundary(hStyle.start_rn, px, transform, 'rn');
-      const endPx = resolveBoundary(hEndRn, px, transform, 'rn');
-      ctx.moveTo(startPx, py);
-      ctx.lineTo(endPx, py);
-    }
+    const hStartPx = resolveBoundary(hStartRn, px, transform, 'rn');
+    const hEndPx = resolveBoundary(hEndRn, px, transform, 'rn');
+    ctx.moveTo(hStartPx, py);
+    ctx.lineTo(hEndPx, py);
     ctx.stroke();
 
     // Draw Vertical Line
     const vStyle = { ...defStyle, ...(style.vertical_line || {}) };
-    let vEndKn = vStyle.end_kn ?? 'full';
+    // Default end to P2's Kn value ('auto') so lines match the chart boundary
+    let vEndKn = vStyle.end_kn ?? 'auto';
     const vOverride = evaluateConditionalLimits(vStyle.conditional_limits, kn, rn, 'end_kn');
     if (vOverride !== null) vEndKn = vOverride;
+    if (vEndKn === 'auto') vEndKn = p2.value[1]; // Use P2 Kn as boundary
+    if (vEndKn === 'full') vEndKn = p2.value[1]; // Legacy 'full' also maps to P2
+
+    let vStartKn = vStyle.start_kn ?? 0; // default start at origin Kn value (0)
 
     applyStyle(vStyle);
     ctx.beginPath();
-    if (vEndKn === 'full') {
-      ctx.moveTo(px, 0);
-      ctx.lineTo(px, canvas.height);
-    } else {
-      const startPy = resolveBoundary(vStyle.start_kn, py, transform, 'kn');
-      const endPy = resolveBoundary(vEndKn, py, transform, 'kn');
-      ctx.moveTo(px, startPy);
-      ctx.lineTo(px, endPy);
-    }
+    const vStartPy = resolveBoundary(vStartKn, py, transform, 'kn');
+    const vEndPy = resolveBoundary(vEndKn, py, transform, 'kn');
+    ctx.moveTo(px, vStartPy);
+    ctx.lineTo(px, vEndPy);
     ctx.stroke();
 
     // Draw Radial Line

@@ -41,6 +41,14 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     link.click();
   };
 
+  const handleBaseImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setConfig({ ...config, image_path: url });
+    e.target.value = '';
+  };
+
   const handleBatchCSV = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -158,38 +166,49 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
           aria-hidden="true"
         />
       </section>
-      
-      <button className="primary-button flex-button" onClick={handleSaveImage}>
-        <Save size={18} /> Save Image
-      </button>
 
-      <section className="control-group upload-section">
-        <input 
-          type="file" 
-          id="csv-upload"
-          accept=".csv"
-          onChange={handleBatchCSV}
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-          disabled={isProcessing}
-        />
-        <label 
-          htmlFor="csv-upload" 
-          className="secondary-button flex-button" 
-          style={{ cursor: isProcessing ? 'not-allowed' : 'pointer', opacity: isProcessing ? 0.7 : 1 }}
-        >
-          {isProcessing ? (
-            <><Loader2 size={18} className="animate-spin" /> Processing Batch...</>
-          ) : (
-            <><Upload size={18} /> Upload CSV & Export</>
-          )}
-        </label>
-        <div style={{ fontSize: "11px", color: "var(--ce-text-secondary)", textAlign: "center", marginTop: "0.5rem" }}>
-          Format: Rn, Kn (e.g. 0.12, 1.45) -&gt; Yields .ZIP<br />
+      <hr style={{ borderTop: "1px solid var(--ce-border)", borderBottom: "none", margin: 0 }} />
+
+      {/* ASSETS & UPLOADS */}
+      <section className="control-group">
+        <h3 className="section-subtitle"><Database size={16} /> Data & Assets</h3>
+        
+        <div className="upload-box">
+          <input 
+            type="file" 
+            id="base-image-upload"
+            accept="image/*"
+            onChange={handleBaseImageUpload}
+            style={{ display: 'none' }}
+          />
+          <label htmlFor="base-image-upload" className="secondary-button flex-button" style={{ cursor: 'pointer' }}>
+            <ImagePlus size={18} /> Upload Base Chart
+          </label>
+          <p className="help-text-sidebar">Use your own interaction diagram image as background.</p>
+        </div>
+
+        <div className="upload-box" style={{ marginTop: '0.25rem' }}>
+          <input 
+            type="file" 
+            id="csv-upload"
+            accept=".csv"
+            onChange={handleBatchCSV}
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            disabled={isProcessing}
+          />
+          <label htmlFor="csv-upload" className="secondary-button flex-button" style={{ cursor: isProcessing ? 'not-allowed' : 'pointer', opacity: isProcessing ? 0.7 : 1 }}>
+            {isProcessing ? (
+              <><Loader2 size={18} className="animate-spin" /> Processing...</>
+            ) : (
+              <><Upload size={18} /> Batch CSV Export</>
+            )}
+          </label>
+          <p className="help-text-sidebar">Plot multiple Rn, Kn points from a file.</p>
           <a 
             href="data:text/csv;charset=utf-8,rn%2Ckn%0A0.12%2C1.45%0A0.25%2C2.10%0A0.30%2C0.80" 
             download="sample_format.csv" 
-            style={{ color: "var(--ce-blue-mid)", textDecoration: "underline", fontWeight: 600, display: "inline-block", marginTop: "0.25rem" }}
+            className="sample-link"
           >
             Download Sample CSV
           </a>
@@ -431,18 +450,25 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       </button>
 
       <div className="info-card">
-        <p>Modify settings like limits, origins, and styling via the configuration modal to instantly update the interaction diagram.</p>
+        <p>Fine-tune calibration points and visual styles in settings to match your specific chart scale.</p>
       </div>
     </aside>
 
     {isConfigOpen && (
       <div className="modal-overlay" onClick={() => setIsConfigOpen(false)}>
         <div className="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title" onClick={e => e.stopPropagation()}>
+          <div className="modal-scroll-inner">
            <button className="modal-close" aria-label="Close modal" onClick={() => setIsConfigOpen(false)}>
              <X size={24} />
            </button>
            <h2 id="modal-title" style={{ marginBottom: "1.5rem", color: "var(--ce-blue-dark)" }}>Settings Configuration</h2>
-           <ConfigUI config={config} setConfig={setConfig} />
+           <ConfigUI 
+              config={config} 
+              setConfig={setConfig} 
+              pickingMode={pickingMode}
+              setPickingMode={setPickingMode}
+           />
+          </div>
         </div>
       </div>
     )}
