@@ -53,3 +53,5 @@ The `/web` folder houses the entire static React application and can be natively
 *   **Save & Export:** Effortless 1-click single-image downloads (`Rn-xxx_Kn-xxx.png`).
 *   **Mass CSV Mode:** Batch generate evaluated diagrams simultaneously via CSV inputs.
 *   **Modal Configuration Engine:** Programmatically change line colors, extensions, conditionals, and image origins in the browser without IDE access.
+
+hehe
